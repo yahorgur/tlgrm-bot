@@ -7,7 +7,7 @@ import { trackMessage } from './../lib/trackMessage.ts';
 import { PublicMessage, RequestBodySchema } from './../lib/schemas.ts';
 
 const replyIsRequired = (record: PublicMessage) => {
-  return record.message.includes('@myasopivo_bot') || record.update_id % 5 == 0;
+  return record.message.includes('@myasopivo_bot') || record.update_id % 3 == 0;
 };
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
