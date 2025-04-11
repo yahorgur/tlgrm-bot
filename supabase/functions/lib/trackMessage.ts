@@ -2,7 +2,7 @@ import { Supabase, RequestBodySchema } from './schemas.ts';
 
 export const trackMessage = async (supabase: Supabase, requestBody: RequestBodySchema) => {
   const chatId = requestBody.message.chat.id;
-  await supabase
+  const response = await supabase
     .from('messages')
     .insert([
       {
@@ -14,4 +14,9 @@ export const trackMessage = async (supabase: Supabase, requestBody: RequestBodyS
     ])
     .select('*')
     .single();
+
+  console.log('Inssert response code:', response.status);
+  console.log('Inssert response error:', response.error);
+
+  return;
 };

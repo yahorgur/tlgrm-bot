@@ -1,8 +1,8 @@
-import { RequestBodySchema, Supabase } from './schemas.ts';
+import { PublicMessage, Supabase } from './schemas.ts';
 
 const OPEN_AI_API_KEY = Deno.env.get('OPEN_AI_API_KEY');
 
-const buildMessagesHisyory = async (supabase: Supabase, chatId: number) => {
+const buildMessagesHistory = async (supabase: Supabase, chatId: number) => {
   const { data: messages } = await supabase
     .from('messages')
     .select('*')
@@ -23,7 +23,7 @@ const buildMessagesHisyory = async (supabase: Supabase, chatId: number) => {
   return messagesForOpenAi;
 };
 
-const seneRequest = async (prompt: string) => {
+const sendRequest = async (prompt: string) => {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -52,8 +52,10 @@ const seneRequest = async (prompt: string) => {
   return JSON.parse(match[0]);
 };
 
-export const sendOpenAIRequest = async (supabase: Supabase, requestBody: RequestBodySchema) => {
-  const messages = await buildMessagesHisyory(supabase, requestBody.message.chat.id);
+export const sendOpenAIRequest = async (supabase: Supabase, record: PublicMessage) => {
+  const messages = await buildMessagesHistory(supabase, record.chat_id);
+
+  console.log(messages);
 
   const prompt = `
     Ты — участник телеграм-чата на 5 человек,
@@ -79,7 +81,7 @@ export const sendOpenAIRequest = async (supabase: Supabase, requestBody: Request
 
   while (retries < 3) {
     try {
-      return await seneRequest(prompt);
+      return await sendRequest(prompt);
     } catch (error) {
       console.error('Error sending request to OpenAI:', error);
       retries++;
